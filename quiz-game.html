@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #game-container {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #timer {
+            font-size: 20px;
+            color: red;
+        }
+        #score {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz Game</h1>
+    <button id="start-button">Play</button>
+    <div id="game-container">
+        <p id="question"></p>
+        <div id="options">
+            <button id="optionA"></button>
+            <button id="optionB"></button>
+            <button id="optionC"></button>
+            <button id="optionD"></button>
+        </div>
+        <p id="timer">Time: 15s</p>
+        <p id="score">Score: 0</p>
+        <p id="round">Round: 1/5</p>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('start-button');
+        const gameContainer = document.getElementById('game-container');
+        const questionElement = document.getElementById('question');
+        const optionA = document.getElementById('optionA');
+        const optionB = document.getElementById('optionB');
+        const optionC = document.getElementById('optionC');
+        const optionD = document.getElementById('optionD');
+        const timerElement = document.getElementById('timer');
+        const scoreElement = document.getElementById('score');
+        const roundElement = document.getElementById('round');
+
+        let score = 0;
+        let currentRound = 0;
+        let timer;
+        let timeLeft = 15;
+
+        // Sample questions (you can expand this list)
+        const questions = [
+            {
+                question: "What is the largest city in Europe by population?",
+                options: ["Moscow", "London", "Berlin", "Madrid"],
+                answer: "Moscow"
+            },
+            {
+                question: "Which planet is the largest in our solar system?",
+                options: ["Earth", "Mars", "Jupiter", "Saturn"],
+                answer: "Jupiter"
+            },
+            {
+                question: "What is the capital of Brazil?",
+                options: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"],
+                answer: "Brasília"
+            },
+            {
+                question: "Which is the longest river in the world?",
+                options: ["Amazon", "Nile", "Yangtze", "Mississippi"],
+                answer: "Nile"
+            },
+            {
+                question: "What is the largest desert in the world?",
+                options: ["Sahara", "Gobi", "Antarctic", "Kalahari"],
+                answer: "Antarctic"
+            }
+        ];
+
+        startButton.addEventListener('click', startGame);
+
+        function startGame() {
+            startButton.style.display = 'none';
+            gameContainer.style.display = 'block';
+            score = 0;
+            currentRound = 0;
+            scoreElement.textContent = `Score: ${score}`;
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentRound >= 5) {
+                endGame();
+                return;
+            }
+
+            clearInterval(timer);
+            timeLeft = 15;
+            timerElement.textContent = `Time: ${timeLeft}s`;
+
+            const currentQuestion = questions[currentRound];
+            questionElement.textContent = currentQuestion.question;
+            optionA.textContent = currentQuestion.options[0];
+            optionB.textContent = currentQuestion.options[1];
+            optionC.textContent = currentQuestion.options[2];
+            optionD.textContent = currentQuestion.options[3];
+
+            optionA.onclick = () => checkAnswer(currentQuestion.options[0], currentQuestion.answer);
+            optionB.onclick = () => checkAnswer(currentQuestion.options[1], currentQuestion.answer);
+            optionC.onclick = () => checkAnswer(currentQuestion.options[2], currentQuestion.answer);
+            optionD.onclick = () => checkAnswer(currentQuestion.options[3], currentQuestion.answer);
+
+            currentRound++;
+            roundElement.textContent = `Round: ${currentRound}/5`;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Time: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(selected, correct) {
+            clearInterval(timer);
+            if (selected === correct) {
+                score++;
+                scoreElement.textContent = `Score: ${score}`;
+            }
+            nextQuestion();
+        }
+
+        function endGame() {
+            gameContainer.innerHTML = `<h2>Game Over!</h2><p>Your final score: ${score}/5</p>`;
+            const restartButton = document.createElement('button');
+            restartButton.textContent = 'Play Again';
+            restartButton.onclick = () => location.reload();
+            gameContainer.appendChild(restartButton);
+        }
+    </script>
+</body>
+</html>
